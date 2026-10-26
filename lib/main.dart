@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'data/tip_data.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +27,8 @@ class SignupPage extends StatefulWidget {
   State<SignupPage> createState() => _SignupPageState();
 }
 
+
+
 class _SignupPageState extends State<SignupPage> {
   // 🔑 The Global Key - acts like a remote control for the form
   final _formKey = GlobalKey<FormState>();
@@ -33,6 +37,27 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  int _tipIndex = 0;
+
+  void _nextTip() {
+    setState(() {
+      _tipIndex = (_tipIndex + 1) % login_tips.length;
+    });
+  }
+
+  Timer? _tipTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _tipTimer = Timer.periodic(const Duration(seconds: 5), (_) => _nextTip());
+  }
+
+  @override
+  void dispose() {
+    _tipTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +77,24 @@ class _SignupPageState extends State<SignupPage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              
+              Card(
+                color: Colors.purple.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        login_tips[_tipIndex].title,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(login_tips[_tipIndex].tip),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
               // 👤 Name Field
               TextFormField(
                 controller: _nameController,
